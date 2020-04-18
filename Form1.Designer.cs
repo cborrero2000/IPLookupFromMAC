@@ -34,11 +34,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.IPAddressLabel = new System.Windows.Forms.Label();
             this.resetButton = new System.Windows.Forms.Button();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // search
             // 
-            this.search.Location = new System.Drawing.Point(123, 63);
+            this.search.Location = new System.Drawing.Point(123, 91);
             this.search.Name = "search";
             this.search.Size = new System.Drawing.Size(558, 51);
             this.search.TabIndex = 0;
@@ -48,7 +49,7 @@
             // 
             // macAddressTextBox
             // 
-            this.macAddressTextBox.Location = new System.Drawing.Point(319, 168);
+            this.macAddressTextBox.Location = new System.Drawing.Point(319, 196);
             this.macAddressTextBox.Name = "macAddressTextBox";
             this.macAddressTextBox.Size = new System.Drawing.Size(362, 38);
             this.macAddressTextBox.TabIndex = 1;
@@ -59,7 +60,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(117, 168);
+            this.label1.Location = new System.Drawing.Point(117, 196);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(196, 32);
             this.label1.TabIndex = 2;
@@ -68,7 +69,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(117, 261);
+            this.label2.Location = new System.Drawing.Point(117, 289);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(160, 32);
             this.label2.TabIndex = 3;
@@ -77,14 +78,14 @@
             // IPAddressLabel
             // 
             this.IPAddressLabel.AutoSize = true;
-            this.IPAddressLabel.Location = new System.Drawing.Point(313, 261);
+            this.IPAddressLabel.Location = new System.Drawing.Point(313, 289);
             this.IPAddressLabel.Name = "IPAddressLabel";
             this.IPAddressLabel.Size = new System.Drawing.Size(0, 32);
             this.IPAddressLabel.TabIndex = 4;
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(123, 338);
+            this.resetButton.Location = new System.Drawing.Point(123, 366);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(154, 49);
             this.resetButton.TabIndex = 5;
@@ -92,12 +93,20 @@
             this.resetButton.UseVisualStyleBackColor = true;
             this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(123, 22);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(558, 45);
+            this.progressBar.TabIndex = 6;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(800, 454);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.resetButton);
             this.Controls.Add(this.IPAddressLabel);
             this.Controls.Add(this.label2);
@@ -120,6 +129,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label IPAddressLabel;
         private System.Windows.Forms.Button resetButton;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }
 

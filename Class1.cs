@@ -20,7 +20,7 @@ namespace PrinterIPLookup
             options.DontFragment = true;
 
             // Create a buffer of 32 bytes of data to be transmitted.
-            string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            string data = "";
             byte[] buffer = Encoding.ASCII.GetBytes(data);
             int timeout = 120;
             PingReply reply = pingSender.Send(IP, timeout, buffer, options);

@@ -29,7 +29,10 @@ namespace PrinterIPLookup
 
         private async void search_Click(object sender, EventArgs e)
         {
-            DisableSearchButton();
+            Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
+            progress.ProgressChanged += ReportProgress;
+
+            DisableControls();
 
             if (cancellationTokenSource != null)
                 cancellationTokenSource.Dispose();
@@ -41,10 +44,10 @@ namespace PrinterIPLookup
 
             // Instantiate the regular expression object.
             Regex regex = new Regex(IPMACPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-            if (await checkARPTableAsync(regex, macText, token))
+            Utility.ExecuteCommandLine("arp", "-d");    //Flush ARP Cache
+            if (await checkARPTableAsync(regex, macText, token, progress))
             {
-                EnableSearchButton();
+                EnableControls();
                 return;
             }
 
@@ -52,11 +55,14 @@ namespace PrinterIPLookup
             int min = 0;
             int max = 255;
             const int STEP = 10;
+            float percentage = 0;
 
             await Task.Run(async () =>
             {
                 for (int i = min; i <= max; i += STEP)
                 {
+                    percentage = i;
+
                     if (token.IsCancellationRequested)
                         break;
 
@@ -66,38 +72,55 @@ namespace PrinterIPLookup
                             break;
 
                         PingExample.PingAndFind("192.168.0." + j);
+                        percentage++;
                     }
 
-                    if (await checkARPTableAsync(regex, macText, token))
+                     if (await checkARPTableAsync(regex, macText, token, progress))
                     {
-                        EnableSearchButton();
+                        EnableControls();
                         break;
                     }
+
+                    Invoke((Action)delegate
+                    {
+                        progressBar.Value = (int)((percentage / (max - min)) * 100);
+                    });
                 }
             }, token);
 
-            EnableSearchButton();
+            EnableControls();
         }
 
-        private void DisableSearchButton()
+        private void DisableControls()
         {
+            macAddressTextBox.Enabled = false;
             search.Enabled = false;
-            search.Text = "SEARCH RUNNING !!! Please wait...";
-            search.BackColor = Color.LightBlue;
+            search.Text = "SEARCH Running!!! Please wait...";
+            search.BackColor = Color.LightPink;
+            macAddressTextBox.Enabled = true;
+            macAddressTextBox.ReadOnly = true;
+            macAddressTextBox.BackColor = Color.LightSteelBlue;
+            macAddressTextBox.ForeColor = Color.Black;
+            progressBar.Value = 0;
         }
 
-        private void EnableSearchButton()
+        private void EnableControls()
         {
             search.Enabled = true;
             search.Text = "SEARCH";
             search.BackColor = default(Color); ;
+            macAddressTextBox.ForeColor = default(Color);
+            macAddressTextBox.BackColor = default(Color);
+            macAddressTextBox.ReadOnly = false;
+            progressBar.Value = 0;
         }
 
-        private async Task<bool> checkARPTableAsync(Regex regex, string input, CancellationToken cancellationToken)
+        private async Task<bool> checkARPTableAsync(Regex regex, string input, CancellationToken cancellationToken, IProgress<ProgressReportModel> progress)
         {
             Match match;
             Group group1, group2;
             bool result = false;
+            ProgressReportModel report = new ProgressReportModel();
 
             await Task.Run(() =>
            {
@@ -126,6 +149,8 @@ namespace PrinterIPLookup
                                });
 
                                result = true;
+                               report.PercentageComplete = 100;
+                               progress.Report(report);
                                break;
                            }
                        }
@@ -136,6 +161,11 @@ namespace PrinterIPLookup
            });
 
             return result;
+        }
+
+        private void ReportProgress(object sender, ProgressReportModel e)
+        {
+            progressBar.Value = e.PercentageComplete;
         }
 
         private void macAddressTextBox_TextChanged(object sender, EventArgs e)
