@@ -44,7 +44,10 @@ namespace PrinterIPLookup
 
             // Instantiate the regular expression object.
             Regex regex = new Regex(IPMACPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            Utility.ExecuteCommandLine("arp", "-d");    //Flush ARP Cache
+
+            if (checkBoxCleanCache.Checked)
+                Utility.ExecuteCommandLine("arp", "-d");    //Flush ARP Cache
+            
             if (await checkARPTableAsync(regex, macText, token, progress))
             {
                 EnableControls();
