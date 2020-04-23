@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +14,16 @@ namespace PrinterIPLookup
 
         public Form1()
         {
+            Thread thread = new Thread(new ThreadStart(splashFormRun));
+            thread.Start();
+            Thread.Sleep(5000);
             InitializeComponent();
+            thread.Abort();
+        }
+
+        private void splashFormRun()
+        {
+            Application.Run(new Form_Splash());
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -47,7 +51,7 @@ namespace PrinterIPLookup
 
             if (checkBoxCleanCache.Checked)
                 Utility.ExecuteCommandLine("arp", "-d");    //Flush ARP Cache
-            
+
             if (await checkARPTableAsync(regex, macText, token, progress))
             {
                 EnableControls();
@@ -78,7 +82,7 @@ namespace PrinterIPLookup
                         percentage++;
                     }
 
-                     if (await checkARPTableAsync(regex, macText, token, progress))
+                    if (await checkARPTableAsync(regex, macText, token, progress))
                     {
                         EnableControls();
                         break;
