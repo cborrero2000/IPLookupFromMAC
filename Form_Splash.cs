@@ -25,7 +25,7 @@ namespace PrinterIPLookup
             }
             else
             {
-                panel2.Left += 2;
+                panel2.Left += 1;
             }
         }
 

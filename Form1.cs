@@ -11,6 +11,7 @@ namespace PrinterIPLookup
     {
         string macText;
         CancellationTokenSource cancellationTokenSource;
+        const int MAX = 100;
 
         public Form1()
         {
@@ -19,6 +20,8 @@ namespace PrinterIPLookup
             Thread.Sleep(5000);
             InitializeComponent();
             thread.Abort();
+            Form1_Load(null, null);
+            search_Click(null, null);
         }
 
         private void splashFormRun()
@@ -119,7 +122,9 @@ namespace PrinterIPLookup
             macAddressTextBox.ForeColor = default(Color);
             macAddressTextBox.BackColor = default(Color);
             macAddressTextBox.ReadOnly = false;
-            progressBar.Value = 0;
+
+            if (cancellationTokenSource.IsCancellationRequested || progressBar.Value < MAX)
+                progressBar.Value = 0;
         }
 
         private async Task<bool> checkARPTableAsync(Regex regex, string input, CancellationToken cancellationToken, IProgress<ProgressReportModel> progress)
@@ -190,6 +195,7 @@ namespace PrinterIPLookup
             {
                 IPAddressLabel.Text = "";
                 macAddressTextBox.Text = "00-15-99-92-CC-EB";
+                progressBar.Value = 0;
             });
 
             cancellationTokenSource.Cancel();
