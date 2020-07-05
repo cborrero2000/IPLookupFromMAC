@@ -37,6 +37,8 @@
             this.resetButton = new System.Windows.Forms.Button();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.checkBoxCleanCache = new System.Windows.Forms.CheckBox();
+            this.txtBoxPortName = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // search
@@ -51,7 +53,7 @@
             // 
             // macAddressTextBox
             // 
-            this.macAddressTextBox.Location = new System.Drawing.Point(319, 235);
+            this.macAddressTextBox.Location = new System.Drawing.Point(319, 201);
             this.macAddressTextBox.Name = "macAddressTextBox";
             this.macAddressTextBox.Size = new System.Drawing.Size(362, 38);
             this.macAddressTextBox.TabIndex = 1;
@@ -62,7 +64,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(117, 235);
+            this.label1.Location = new System.Drawing.Point(117, 201);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(196, 32);
             this.label1.TabIndex = 2;
@@ -71,7 +73,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(117, 308);
+            this.label2.Location = new System.Drawing.Point(117, 320);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(160, 32);
             this.label2.TabIndex = 3;
@@ -80,7 +82,7 @@
             // IPAddressLabel
             // 
             this.IPAddressLabel.AutoSize = true;
-            this.IPAddressLabel.Location = new System.Drawing.Point(313, 308);
+            this.IPAddressLabel.Location = new System.Drawing.Point(432, 322);
             this.IPAddressLabel.Name = "IPAddressLabel";
             this.IPAddressLabel.Size = new System.Drawing.Size(0, 32);
             this.IPAddressLabel.TabIndex = 4;
@@ -112,12 +114,32 @@
             this.checkBoxCleanCache.Text = "Clean Cache";
             this.checkBoxCleanCache.UseVisualStyleBackColor = true;
             // 
+            // txtBoxPortName
+            // 
+            this.txtBoxPortName.Location = new System.Drawing.Point(362, 259);
+            this.txtBoxPortName.Name = "txtBoxPortName";
+            this.txtBoxPortName.Size = new System.Drawing.Size(319, 38);
+            this.txtBoxPortName.TabIndex = 8;
+            this.txtBoxPortName.Text = "192.168.0.17";
+            this.txtBoxPortName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(116, 263);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(233, 32);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Local Port Name:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(16F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(800, 454);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.txtBoxPortName);
             this.Controls.Add(this.checkBoxCleanCache);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.resetButton);
@@ -145,6 +167,8 @@
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.CheckBox checkBoxCleanCache;
+        private System.Windows.Forms.TextBox txtBoxPortName;
+        private System.Windows.Forms.Label label3;
     }
 }
 

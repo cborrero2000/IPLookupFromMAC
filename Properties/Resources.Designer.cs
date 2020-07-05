@@ -61,6 +61,15 @@ namespace PrinterIPLookup.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream EndFx {
+            get {
+                return ResourceManager.GetStream("EndFx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Magnet {
@@ -87,6 +96,24 @@ namespace PrinterIPLookup.Properties {
             get {
                 object obj = ResourceManager.GetObject("Magnet2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream shooting_star {
+            get {
+                return ResourceManager.GetStream("shooting_star", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream TaDa {
+            get {
+                return ResourceManager.GetStream("TaDa", resourceCulture);
             }
         }
     }
