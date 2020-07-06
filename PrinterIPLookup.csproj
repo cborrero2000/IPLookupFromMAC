@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="3925426-print-printer-printing-icon_111556.ico" />
+    <None Include="Resources\chime.wav" />
     <None Include="Resources\shooting_star.wav" />
     <None Include="Resources\same.mp3" />
     <None Include="Resources\TaDa.wav" />

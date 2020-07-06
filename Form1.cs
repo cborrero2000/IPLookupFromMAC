@@ -111,6 +111,13 @@ namespace PrinterIPLookup
 
         private bool SetPrinterIPInRegistry()
         {
+            if (!checkBoxMapPortIP.Checked)
+            {
+                var player = new SoundPlayer(PrinterIPLookup.Properties.Resources.chime);
+                player.Play();
+                return false;
+            }
+
             try
             {
                 string onlinePrinterIPAddress = IPAddressLabel.Text;
@@ -285,6 +292,16 @@ namespace PrinterIPLookup
                 IPAddressLabel.Text = "";
                 macAddressTextBox.Text = "00-15-99-92-CC-EB";
                 txtBoxPortName.Text = "192.168.0.17";
+                progressBar.Value = 0;
+            });
+
+            cancellationTokenSource.Cancel();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Invoke((Action)delegate
+            {
                 progressBar.Value = 0;
             });
 

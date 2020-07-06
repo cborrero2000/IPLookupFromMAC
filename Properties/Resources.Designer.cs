@@ -63,6 +63,15 @@ namespace PrinterIPLookup.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream chime {
+            get {
+                return ResourceManager.GetStream("chime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream EndFx {
             get {
                 return ResourceManager.GetStream("EndFx", resourceCulture);
