@@ -39,6 +39,8 @@ namespace PrinterIPLookup
 
         private async void search_Click(object sender, EventArgs e)
         {
+            bool result = false;
+
             Progress<ProgressReportModel> progress = new Progress<ProgressReportModel>();
             progress.ProgressChanged += ReportProgress;
 
@@ -61,7 +63,7 @@ namespace PrinterIPLookup
             if (await checkARPTableAsync(regex, macText, token, progress))
             {
                 EnableControls();
-                SetPrinterIPInRegistry();
+                SetPrinterIPInControlPanelProperties();
                 return;
             }
 
@@ -92,7 +94,7 @@ namespace PrinterIPLookup
                     if (await checkARPTableAsync(regex, macText, token, progress))
                     {
                         EnableControls();
-                        SetPrinterIPInRegistry();
+                        result = SetPrinterIPInControlPanelProperties();
                         break;
                     }
 
@@ -105,89 +107,96 @@ namespace PrinterIPLookup
 
             EnableControls();
 
-            var player = new SoundPlayer(PrinterIPLookup.Properties.Resources.EndFx);
-            player.Play();
+            if (!result)
+            {
+                var player = new SoundPlayer(PrinterIPLookup.Properties.Resources.EndFx);
+                player.Play();
+            }
         }
 
-        private bool SetPrinterIPInRegistry()
+        private bool SetPrinterIPInControlPanelProperties()
         {
+            bool result = false;
+
             if (!checkBoxMapPortIP.Checked)
             {
                 var player = new SoundPlayer(PrinterIPLookup.Properties.Resources.chime);
                 player.Play();
-                return false;
+                result = true;
             }
-
-            try
+            else
             {
-                string onlinePrinterIPAddress = IPAddressLabel.Text;
-                string localPortName = txtBoxPortName.Text;
-
-                //set the class name and namespace
-                string NamespacePath = "\\\\.\\ROOT\\cimv2";
-                string ClassName = "Win32_TCPIPPrinterPort";
-
-                ConnectionOptions connectionOptions;
-
-                connectionOptions = new ConnectionOptions();
-                connectionOptions.EnablePrivileges = true;
-                connectionOptions.Impersonation =
-                System.Management.ImpersonationLevel.Impersonate;
-
-                //Create ManagementClass
-                ManagementClass oClass = new ManagementClass(NamespacePath + ":" + ClassName);
-
-                //Get all instances of the class and enumerate them
-                foreach (ManagementObject oObject in oClass.GetInstances())
+                try
                 {
-                    //access a property of the Management object
-                    string hostName = oObject.GetPropertyValue("Name").ToString();
+                    string onlinePrinterIPAddress = IPAddressLabel.Text;
+                    string localPortName = txtBoxPortName.Text;
 
-                    if (localPortName == hostName)
+                    //set the class name and namespace
+                    string NamespacePath = "\\\\.\\ROOT\\cimv2";
+                    string ClassName = "Win32_TCPIPPrinterPort";
+
+                    ConnectionOptions connectionOptions;
+
+                    connectionOptions = new ConnectionOptions();
+                    connectionOptions.EnablePrivileges = true;
+                    connectionOptions.Impersonation =
+                    System.Management.ImpersonationLevel.Impersonate;
+
+                    //Create ManagementClass
+                    ManagementClass oClass = new ManagementClass(NamespacePath + ":" + ClassName);
+
+                    //Get all instances of the class and enumerate them
+                    foreach (ManagementObject oObject in oClass.GetInstances())
                     {
-                        string localPrinterIPAddress = oObject.GetPropertyValue("HostAddress").ToString();
+                        //access a property of the Management object
+                        string hostName = oObject.GetPropertyValue("Name").ToString();
 
-                        if (onlinePrinterIPAddress != localPrinterIPAddress)
+                        if (localPortName == hostName)
                         {
-                            oObject.SetPropertyValue("HostAddress", onlinePrinterIPAddress);
-                            oObject.Put();
+                            string localPrinterIPAddress = oObject.GetPropertyValue("HostAddress").ToString();
+
+                            if (onlinePrinterIPAddress != localPrinterIPAddress)
+                            {
+                                oObject.SetPropertyValue("HostAddress", onlinePrinterIPAddress);
+                                oObject.Put();
+                            }
+
+                            var player = new SoundPlayer(PrinterIPLookup.Properties.Resources.shooting_star);
+                            player.Play();
+                            result = true;
+                            break;
                         }
-
-                        var player = new SoundPlayer(PrinterIPLookup.Properties.Resources.shooting_star);
-                        player.Play();
-
-                        break;
                     }
+
+                    // USEFULL CODE NO NEEDED FOR NOW BUT NICE WAY TO READ AND MODIFY REGISTRY KEYS
+
+                    // Both path below access the same registry key
+                    //Computer\HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Monitors\Standard TCP/IP Port\Ports\192.168.0.17 Data=192.168.0.25
+                    //Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\192.168.0.17 Data=192.168.0.25
+
+                    ////RegistryKey key = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\" + "192.168.0.17"/*printerPortName*/, RegistryKeyPermissionCheck.Default, System.Security.AccessControl.RegistryRights.QueryValues);
+                    ////RegistryKey key = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\" + "192.168.0.17"/*printerPortName*/, RegistryKeyPermissionCheck.Default, System.Security.AccessControl.RegistryRights.FullControl);
+                    //string printerPortName = "192.168.0.17";
+                    //RegistryKey key = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\" + printerPortName, true);
+                    //if (key != null)
+                    //{
+                    //    String IP = (String)key.GetValue("HostName", String.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
+                    //    string freshIPAddress = IPAddressLabel.Text;
+                    //    /*String IP = (String)*/
+                    //    key.SetValue("HostName", freshIPAddress);
+                    //}
+
+                    ////RegistryKey key2 = Registry.LocalMachine.OpenSubKey(@"SYSTEM\ControlSet001\Control\Print\Monitors\Standard TCP/IP Port\Ports\192.168.0.17", true);
+                    ////String IP2 = (String)key2.GetValue("HostName", String.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
+                    ////key2.SetValue("HostName", "192.168.0.24");
                 }
-
-                // USEFULL CODE NO NEEDED FOR NOW BUT NICE WAY TO READ AND MODIFY REGISTRY KEYS
-
-                // Both path below access the same registry key
-                //Computer\HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Monitors\Standard TCP/IP Port\Ports\192.168.0.17 Data=192.168.0.25
-                //Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\192.168.0.17 Data=192.168.0.25
-
-                ////RegistryKey key = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\" + "192.168.0.17"/*printerPortName*/, RegistryKeyPermissionCheck.Default, System.Security.AccessControl.RegistryRights.QueryValues);
-                ////RegistryKey key = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\" + "192.168.0.17"/*printerPortName*/, RegistryKeyPermissionCheck.Default, System.Security.AccessControl.RegistryRights.FullControl);
-                //string printerPortName = "192.168.0.17";
-                //RegistryKey key = Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\" + printerPortName, true);
-                //if (key != null)
-                //{
-                //    String IP = (String)key.GetValue("HostName", String.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
-                //    string freshIPAddress = IPAddressLabel.Text;
-                //    /*String IP = (String)*/
-                //    key.SetValue("HostName", freshIPAddress);
-                //}
-
-                ////RegistryKey key2 = Registry.LocalMachine.OpenSubKey(@"SYSTEM\ControlSet001\Control\Print\Monitors\Standard TCP/IP Port\Ports\192.168.0.17", true);
-                ////String IP2 = (String)key2.GetValue("HostName", String.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
-                ////key2.SetValue("HostName", "192.168.0.24");
-            }
-            catch (Exception ex)
-            {
-
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.StackTrace);
+                }
             }
 
-            return true;
+            return result;
         }
 
         private void DisableControls()
