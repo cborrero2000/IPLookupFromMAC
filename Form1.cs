@@ -20,7 +20,7 @@ namespace PrinterIPLookup
         {
             Thread thread = new Thread(new ThreadStart(splashFormRun));
             thread.Start();
-            Thread.Sleep(1000);
+            Thread.Sleep(4500);
             InitializeComponent();
             thread.Abort();
             Form1_Load(null, null);
@@ -65,7 +65,8 @@ namespace PrinterIPLookup
             }
 
             IPMACPattern = @"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b\s*\b([a-fA-F0-9-]{17}|[a-fA-F0-9]{12})\b"; // matching (192.168.0.16          88-36-5f-df-84-6b) within (192.168.0.16          88-36-5f-df-84-6b     dynamic)
-            
+            regex = new Regex(IPMACPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
             // ARP & PINGING STRATEGY
             if (checkBoxCleanCache.Checked)
                 Utility.ExecuteCommandLine("arp", "-d");    //Flush ARP Cache
@@ -224,6 +225,8 @@ namespace PrinterIPLookup
             txtBoxPortName.BackColor = Color.LightSteelBlue;
             txtBoxPortName.ForeColor = Color.Black;
             progressBar.Value = 0;
+            IPAddressLabel.Text = "";
+            macText = macAddressTextBox.Text.ToUpper();
         }
 
         private void EnableControls()
@@ -268,7 +271,7 @@ namespace PrinterIPLookup
                            group1 = match.Groups[1];
                            group2 = match.Groups[2];
 
-                           if (group2.ToString().ToUpper().Contains(input))
+                           if (group2.ToString().ToUpper().Equals(input))
                            {
                                Invoke((Action)delegate
                                {
@@ -295,11 +298,14 @@ namespace PrinterIPLookup
             Match match;
             bool result = false;
             ProgressReportModel report = new ProgressReportModel();
+            string hostName = textBoxHostName.Text;
+            
+            if (string.IsNullOrWhiteSpace(hostName))
+                return result;
 
             await Task.Run(() =>
             {
                 bool checkIP = false;
-                string hostName = textBoxHostName.Text;
                 var arpStream = Utility.ExecuteCommandLine("nslookup", hostName);
                 var line = arpStream.ReadLine();
 
@@ -368,6 +374,7 @@ namespace PrinterIPLookup
                 textBoxHostName.Text = "SAMSUNG_PRINTER";
                 macAddressTextBox.Text = "00-15-99-92-CC-EB";
                 txtBoxPortName.Text = "192.168.0.17";
+                IPAddressLabel.Text = "";
                 progressBar.Value = 0;
             });
 
