@@ -51,12 +51,22 @@ namespace PrinterIPLookup
 
             cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
-
-            string IPMACPattern = @"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b\s*\b([a-fA-F0-9-]{17}|[a-fA-F0-9]{12})\b"; // matching (192.168.0.16          88-36-5f-df-84-6b) within (192.168.0.16          88-36-5f-df-84-6b     dynamic)
-
+            
+            string IPMACPattern = @"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b"; // matching (192.168.1.109) within (Address:  192.168.1.109)
             // Instantiate the regular expression object.
             Regex regex = new Regex(IPMACPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+            // NSLOOKUP STRATEGY
+            if (await nslookupAsync(regex, macText, token, progress))
+            {
+                EnableControls();
+                SetPrinterIPInControlPanelProperties();
+                return;
+            }
+
+            IPMACPattern = @"\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b\s*\b([a-fA-F0-9-]{17}|[a-fA-F0-9]{12})\b"; // matching (192.168.0.16          88-36-5f-df-84-6b) within (192.168.0.16          88-36-5f-df-84-6b     dynamic)
+            
+            // ARP & PINGING STRATEGY
             if (checkBoxCleanCache.Checked)
                 Utility.ExecuteCommandLine("arp", "-d");    //Flush ARP Cache
 
@@ -280,6 +290,62 @@ namespace PrinterIPLookup
             return result;
         }
 
+        private async Task<bool> nslookupAsync(Regex regex, string input, CancellationToken cancellationToken, IProgress<ProgressReportModel> progress)
+        {
+            Match match;
+            bool result = false;
+            ProgressReportModel report = new ProgressReportModel();
+
+            await Task.Run(() =>
+            {
+                bool checkIP = false;
+                string hostName = textBoxHostName.Text;
+                var arpStream = Utility.ExecuteCommandLine("nslookup", hostName);
+                var line = arpStream.ReadLine();
+
+                while (line != null)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+
+                    if (line != "")
+                    {
+                        if (!checkIP && line.Contains(hostName))
+                        {
+                            checkIP = true;
+                            line = arpStream.ReadLine();
+                        }
+                        else
+                        {
+                            line = arpStream.ReadLine();
+                            continue;
+                        }
+
+                        match = regex.Match(line);
+
+                        if (match.Success)
+                        {
+                            Invoke((Action)delegate
+                            {
+                                IPAddressLabel.Text = match.Value;
+                            });
+
+                            result = true;
+                            report.PercentageComplete = 100;
+                            progress.Report(report);
+                            break;
+                        }
+
+                    }
+                    
+                    line = arpStream.ReadLine();
+                }
+                
+            });
+
+            return result;
+        }
+
         private void ReportProgress(object sender, ProgressReportModel e)
         {
             progressBar.Value = e.PercentageComplete;
@@ -299,6 +365,7 @@ namespace PrinterIPLookup
             Invoke((Action)delegate
             {
                 IPAddressLabel.Text = "";
+                textBoxHostName.Text = "SAMSUNG_PRINTER";
                 macAddressTextBox.Text = "00-15-99-92-CC-EB";
                 txtBoxPortName.Text = "192.168.0.17";
                 progressBar.Value = 0;
