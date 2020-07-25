@@ -10,6 +10,8 @@ Utility to find IP Address thru nslookup command based on Host Name and also thr
 <img src="images/Printer2.png" alt="Intial Search Screen" width="400">
 <img src="images/Printer1.png" alt="Successful Search Screen" width="400">
 </div>
+<br>
+<img src="images/ControlPanelPrinterProperties.png" alt="Control Panel Printer Properties Update" width="4000" >
 
 <H2>Description and History</H2>
 
